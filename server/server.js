@@ -23,13 +23,17 @@ app.get("/config", (req, res) => {
 
 app.post("/create-payment-intent", async (req, res) => {
   try {
+
     const paymentIntent = await stripe.paymentIntents.create({
-      currency: "MXN",
+      currency: "mxn",
       amount: 1999 * 100,
       automatic_payment_methods: {
         enabled: true,
       },
+      customer: "cus_MtOPf09jSFZzt5"
     });
+
+    console.log("paymentIntent: ", paymentIntent);
 
     res.send({ clientSecret: paymentIntent.client_secret });
   } catch (error) {

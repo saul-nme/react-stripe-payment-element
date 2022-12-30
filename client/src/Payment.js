@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import CheckoutForm from "./CheckoutForm";
 import { Elements } from "@stripe/react-stripe-js";
+import CustomForm from "./CustomForm";
 
 function Payment() {
   const [stripePromise, setStripePromise] = useState(null);
@@ -14,6 +15,7 @@ function Payment() {
       setStripePromise(loadStripe(publishableKey));
     });
   }, []);
+
   useEffect(() => {
     fetch("/create-payment-intent", {
       method: "POST",
@@ -32,17 +34,22 @@ function Payment() {
           stripe={stripePromise}
           options={{
             clientSecret,
-            appearance: {
-              theme: "flat",
-              labels: "floating",
-            },
-            customerOptions: {
-              customer: "cus_MtOPf09jSFZzt5",
-            },
-            loader: "always",
+            // appearance: {
+            //   theme: "flat",
+            //   labels: "floating",
+            // },
           }}
         >
-          <CheckoutForm clientSecret={clientSecret} />
+          <CheckoutForm clientSecret={clientSecret}>
+            {({ handleSubmit, isProcessing }) => {
+              return (
+                <CustomForm
+                  handleSubmit={handleSubmit}
+                  isProcessing={isProcessing}
+                />
+              );
+            }}
+          </CheckoutForm>
         </Elements>
       )}
     </div>

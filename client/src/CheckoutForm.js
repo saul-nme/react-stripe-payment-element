@@ -5,8 +5,10 @@ import {
   PaymentRequestButtonElement,
 } from "@stripe/react-stripe-js";
 import { PaymentElement } from "@stripe/react-stripe-js";
+import CustomForm from "./CustomForm";
 
-export default function CheckoutForm() {
+// This is a container
+export default function CheckoutForm({children, clientSecret}) {
   const stripe = useStripe();
   const elements = useElements();
   const [message, setMessage] = useState(null);
@@ -30,32 +32,21 @@ export default function CheckoutForm() {
     });
 
     if (error) {
-      console.log(error.message);
+      console.log(error);
       setMessage(error.message);
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
+      console.log("paymentIntent: ", paymentIntent);
       setMessage("Payment status: " + paymentIntent.status + " 🥵");
     }
     setIsProcessing(false);
   };
 
   return (
-    <form id="payment-form" onSubmit={handleSubmit}>
-      <PaymentElement
-        options={{
-          business: { name: "B2B" },
-          terms: {
-            card: "always",
-          },
-        }}
-      />
-      <button disabled={isProcessing} id="submit">
-        <span id="button-text">
-          {isProcessing ? "Processing ... " : "Pay now"}
-        </span>
-      </button>
-
-      {/* Show any error or success messages */}
-      {message && <div id="payment-message">{message}</div>}
-    </form>
+    <>
+      {children({
+        handleSubmit,
+        isProcessing,
+      })}
+    </>
   );
 }
